@@ -1,0 +1,14 @@
+train_net:"netVersion/4SV3/train.prototxt"
+lr_policy: "poly"
+power: 0.9
+base_lr: 1e-3
+
+average_loss: 20
+display: 10
+max_iter: 200000
+momentum: 0.9
+weight_decay: 0.0005
+
+snapshot: 5000
+snapshot_prefix:"trainResult/trainResultSH08204SV3/SH08204SV3"
+solver_mode: GPU
