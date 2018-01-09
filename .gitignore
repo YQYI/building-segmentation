@@ -1,4 +1,7 @@
-initModel/*
-test/*
-train/*
+initModel
+test
+train
 .idea
+data
+*.log
+

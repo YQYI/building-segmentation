@@ -5,6 +5,10 @@ import cv2
 import shutil
 import scipy.io as scio
 import numpy as  np
+
+import multiprocessing
+cpuNum=multiprocessing.cpu_count()
+print("cpu总数："+str(cpuNum))
 #overlapSplit这里面有个很大的逻辑陷阱，注意计算有效边长是减去一个重叠因子
 def overlapSplit(imagePath,P,netInputSide,savePath):
     suffix=imagePath[-4:]
@@ -34,10 +38,9 @@ def overlapSplit(imagePath,P,netInputSide,savePath):
     return [splitH,splitW,validePadH,validePadW]
 
 
-def transformMatToPng(matPath,savePath):
-    matList=os.listdir(matPath)
+def transformMatToPng(matList,savePath,processID):
     for mat in matList:
-        print("transform "+mat)
+        print("process"+str(processID)+" is transforming "+mat)
         data = scio.loadmat(matPath+'/'+mat)
         imageArray = data['data']
         imageArray = imageArray.transpose(1, 0, 2, 3)
@@ -49,15 +52,16 @@ def transformMatToPng(matPath,savePath):
                     pngImage[i][j] = (0, 0, 0)
                 else:
                     pngImage[i][j] = (255, 255, 255)
-        cv2.imwrite(savePath+'/'+mat[0:3]+'.png', pngImage)
+        cv2.imwrite(savePath+'/'+mat[0:-4]+'.png', pngImage)
 
 def mergeResult(piecePath,savePath,P,splitInfo,side):
-    validSide=side-P
     vList=[]
     for i in range(splitInfo[0]):
         hList=[]
         for j in range(splitInfo[1]):
-            piece=cv2.imread(piecePath+'/'+str(i)+'_'+str(j)+'.png')
+            aPath=piecePath+'/'+str(i)+'_'+str(j)+"*"+'_blob_0.png'
+            print(aPath)
+            piece=cv2.imread(aPath)
             cut=int(P/2)
             validPiece=piece[cut:side-cut,cut:side-cut]
             hList.append(validPiece)
@@ -81,7 +85,7 @@ def mergeResult(piecePath,savePath,P,splitInfo,side):
 
 
 ####overSplit
-imagePath='../test/image/testImage.jpg'
+imagePath='../0818数据/1.jpg'
 P=40
 netInputSide=321
 savePath='../test/overlapSplit'
@@ -115,7 +119,7 @@ with open(txtPath+"/imageID.txt", "w") as f:
 ##文件设置
 caffeToolsPath="/home/yqy/computerVison/deepLabCaffe/build/tools/caffe"
 iterNum=countImage
-model="../train/result/ori_iter_111000.caffemodel"
+model="../train/result/SH4SV3Init.caffemodel"
 netStructure="../netVersion/4SV3/test.prototxt"
 
 ##先准备mat特征的输出环境
@@ -142,12 +146,34 @@ os.system( caffeToolsPath+" test --model="
            +str(iterNum))
 
 ####transform mat to png
+
 resultPath='../test/result'
 if os.path.exists(resultPath):
     shutil.rmtree(resultPath)
 os.mkdir(resultPath)
+
 matList=os.listdir(matPath)
-transformMatToPng(matPath,resultPath)
+
+processList=[]
+pieceSize=int(len(matList)/cpuNum)
+
+for i in range(cpuNum):
+    if i==cpuNum-1:
+        aProcess = multiprocessing.Process(
+            target=transformMatToPng,
+            args=(matList[pieceSize * i:], resultPath,i))
+    else:
+        aProcess=multiprocessing.Process(
+            target=transformMatToPng,
+            args=(matList[pieceSize*i:pieceSize*(i+1)],resultPath,i))
+    processList.append(aProcess)
+
+for i in range(len(processList)):
+    processList[i].daemon = True
+    processList[i].start()
+# 设置运行完所有进程才进入下一步
+for i in range(len(processList)):
+    processList[i].join()
 
 ####拼接结果并且成图,包括还原大小
 reportPath='../test/report'

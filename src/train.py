@@ -32,7 +32,7 @@ def ifNeedDelete(labelClipedPath,imageClipedPath,labelList,backGroundValue,num):
                 break
         if noDelete == False:
             os.remove(labelClipedPath + '/' + labelName)
-            os.remove(imageClipedPath + '/' + labelName[0:-4] + '.jpg')
+            os.remove(imageClipedPath + '/' + labelName[0:-4] + '.png')
 
 def transformDimension(labelClipedPath,colourMap,labelCliped1DPath):
     labelClipedNameList=os.listdir(labelClipedPath)
@@ -50,7 +50,7 @@ def transformDimension(labelClipedPath,colourMap,labelCliped1DPath):
 ####先切割训练样本
 print("start clip")
 backGroundValue=(255,255,255)
-imageSource='../train/image/trainImage.jpg'
+imageSource='../train/image/trainImage.png'
 labelSource='../train/label/trainLabel.png'
 side=321
 clipPath ='../train/clipResult'
@@ -117,9 +117,6 @@ netStructure='/home/yqy/computerVison/RSBD4/netVersion/4SV3/train.prototxt'
 resultPath = '../train/result'
 
 logPath='../train/log'
-if os.path.exists(logPath):
-    shutil.rmtree(logPath)
-os.mkdir(logPath)
 
 resultPrefix=resultPath+'/'+timeNow
 
@@ -145,6 +142,6 @@ for i in range(fLen):
         lines[i+1] = "source:\""+txtPath+"/train.txt"+"\""+"\n"
 open(netStructure, 'w').writelines(lines)
 
-initFilePath='../initModel/init.caffemodel'
+initFilePath='../initModel/4SV3Init.caffemodel'
 logName=timeNow+'.log'
 os.system( caffeToolPath+" train --solver="+solverFilePath+" --weights="+initFilePath+" 2>&1 | tee "+logPath+'/'+logName)
