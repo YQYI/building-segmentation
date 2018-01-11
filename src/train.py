@@ -50,9 +50,9 @@ def transformDimension(labelClipedPath,colourMap,labelCliped1DPath):
 ####先切割训练样本
 print("start clip")
 backGroundValue=(255,255,255)
-imageSource='../train/image/trainImage.png'
-labelSource='../train/label/trainLabel.png'
-side=321
+imageSource='../data/toServer0109/train/image.png'
+labelSource='../data/toServer0109/train/label.png'
+side=161
 clipPath ='../train/clipResult'
 if os.path.exists(clipPath):
     shutil.rmtree(clipPath)
@@ -121,7 +121,7 @@ logPath='../train/log'
 resultPrefix=resultPath+'/'+timeNow
 
 caffeToolPath='/home/yqy/computerVison/deepLabCaffe/build/tools/caffe'
-solverFilePath='../netVersion/4SV3/solver.prototxt'
+solverFilePath='../netVersion/20180111/solver.prototxt'
 
 #修改solver里面的内容
 lines = open(solverFilePath,'r').readlines()

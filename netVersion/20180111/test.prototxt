@@ -26,8 +26,8 @@ layer {
     mean_value: 122.675
   }
   image_data_param {
-    root_folder:"/home/yqy/computerVison/deeplabV2CUDNN5/trainBuilding"
-    source:"evaluate/SH0818_ORI_iter_55000/list/testImage.txt"
+root_folder:""
+source:"../test/list/imagePath.txt"
     batch_size: 1
     label_type: NONE
   }
@@ -63,7 +63,7 @@ layer {
   }
 }
 layer {
-  name: "relu1_2"
+  name: "relu1_2" 
   type: "ReLU"
   bottom: "conv1_2"
   top: "conv1_2"
@@ -178,21 +178,9 @@ layer {
   top: "conv3_3"
 }
 layer {
-  name: "pool3"
-  type: "Pooling"
-  bottom: "conv3_3"
-  top: "pool3"
-  pooling_param {
-    pool: MAX
-    kernel_size: 3
-    stride: 2
-    pad: 1
-  }
-}
-layer {
   name: "conv4_1"
   type: "Convolution"
-  bottom: "pool3"
+  bottom: "conv3_3"
   top: "conv4_1"
   convolution_param {
     num_output: 512
@@ -206,130 +194,17 @@ layer {
   bottom: "conv4_1"
   top: "conv4_1"
 }
-layer {
-  name: "conv4_2"
-  type: "Convolution"
-  bottom: "conv4_1"
-  top: "conv4_2"
-  convolution_param {
-    num_output: 512
-    pad: 1
-    kernel_size: 3
-  }
-}
-layer {
-  name: "relu4_2"
-  type: "ReLU"
-  bottom: "conv4_2"
-  top: "conv4_2"
-}
-layer {
-  name: "conv4_3"
-  type: "Convolution"
-  bottom: "conv4_2"
-  top: "conv4_3"
-  convolution_param {
-    num_output: 512
-    pad: 1
-    kernel_size: 3
-  }
-}
-layer {
-  name: "relu4_3"
-  type: "ReLU"
-  bottom: "conv4_3"
-  top: "conv4_3"
-}
-layer {
-  bottom: "conv4_3"
-  top: "pool4"
-  name: "pool4"
-  type: "Pooling"
-  pooling_param {
-    pool: MAX
-    kernel_size: 3
-    pad: 1
-    stride: 1
-  }
-}
-layer {
-  name: "conv5_1"
-  type: "Convolution"
-  bottom: "pool4"
-  top: "conv5_1"
-  convolution_param {
-    num_output: 512
-    pad: 2
-    kernel_size: 3
-    dilation: 2
-  }
-}
-layer {
-  name: "relu5_1"
-  type: "ReLU"
-  bottom: "conv5_1"
-  top: "conv5_1"
-}
-layer {
-  name: "conv5_2"
-  type: "Convolution"
-  bottom: "conv5_1"
-  top: "conv5_2"
-  convolution_param {
-    num_output: 512
-    pad: 2
-    kernel_size: 3
-    dilation: 2
-  }
-}
-layer {
-  name: "relu5_2"
-  type: "ReLU"
-  bottom: "conv5_2"
-  top: "conv5_2"
-}
-layer {
-  name: "conv5_3"
-  type: "Convolution"
-  bottom: "conv5_2"
-  top: "conv5_3"
-  convolution_param {
-    num_output: 512
-    pad: 2
-    kernel_size: 3
-    dilation: 2
-  }
-}
-layer {
-  name: "relu5_3"
-  type: "ReLU"
-  bottom: "conv5_3"
-  top: "conv5_3"
-}
-layer {
-  bottom: "conv5_3"
-  top: "pool5"
-  name: "pool5"
-  type: "Pooling"
-  pooling_param {
-    pool: MAX
-    kernel_size: 3
-    stride: 1
-    pad: 1
-  }
-}
 
-### hole = 6
+### hole = 0
 layer {
   name: "fc6_1"
   type: "Convolution"
-  bottom: "pool5"
+  bottom:"conv4_1"
   top: "fc6_1"
   convolution_param {
     num_output: 1024
-    pad: 6
+    pad: 1
     kernel_size: 3
-    dilation: 6
   }
 }
 layer {
@@ -383,17 +258,17 @@ layer {
   }
 }
 
-### hole = 12
+### hole = 3
 layer {
   name: "fc6_2"
   type: "Convolution"
-  bottom: "pool5"
+  bottom:"conv4_1"
   top: "fc6_2"
   convolution_param {
     num_output: 1024
-    pad: 12
+    pad: 3
     kernel_size: 3
-    dilation: 12
+    dilation: 3
   }
 }
 layer {
@@ -447,17 +322,17 @@ layer {
   }
 }
 
-### hole = 18
+### hole = 6
 layer {
   name: "fc6_3"
   type: "Convolution"
-  bottom: "pool5"
+  bottom:"conv4_1"
   top: "fc6_3"
   convolution_param {
     num_output: 1024
-    pad: 18
+    pad: 6
     kernel_size: 3
-    dilation: 18
+    dilation: 6
   }
 }
 layer {
@@ -511,76 +386,12 @@ layer {
   }
 }
 
-### hole = 24
-layer {
-  name: "fc6_4"
-  type: "Convolution"
-  bottom: "pool5"
-  top: "fc6_4"
-  convolution_param {
-    num_output: 1024
-    pad: 24
-    kernel_size: 3
-    dilation: 24
-  }
-}
-layer {
-  name: "relu6_4"
-  type: "ReLU"
-  bottom: "fc6_4"
-  top: "fc6_4"
-}
-layer {
-  name: "drop6_4"
-  type: "Dropout"
-  bottom: "fc6_4"
-  top: "fc6_4"
-  dropout_param {
-    dropout_ratio: 0.5
-  }
-}
-layer {
-  name: "fc7_4"
-  type: "Convolution"
-  bottom: "fc6_4"
-  top: "fc7_4"
-  convolution_param {
-    num_output: 1024
-    kernel_size: 1
-  }
-}
-layer {
-  name: "relu7_4"
-  type: "ReLU"
-  bottom: "fc7_4"
-  top: "fc7_4"
-}
-layer {
-  name: "drop7_4"
-  type: "Dropout"
-  bottom: "fc7_4"
-  top: "fc7_4"
-  dropout_param {
-    dropout_ratio: 0.5
-  }
-}
-layer {
-  name: "fc8_${EXP}_4"
-  type: "Convolution"
-  bottom: "fc7_4"
-  top: "fc8_${EXP}_4"
-  convolution_param {
-    num_output: 2
-    kernel_size: 1
-  }
-}
 
 ### 四个层相加，eltwise层的操作有三个product点乘，sum相加减，max取大值，其中sum是默认的方式。
 layer {
   bottom: "fc8_${EXP}_1"
   bottom: "fc8_${EXP}_2"
   bottom: "fc8_${EXP}_3"
-  bottom: "fc8_${EXP}_4"
   top: "fc8_${EXP}"
   name: "fc8_${EXP}"
   type: "Eltwise"
@@ -595,7 +406,7 @@ layer {
   bottom: "fc8_${EXP}"
   top: "fc8_interp"
   interp_param {
-    zoom_factor: 8
+    zoom_factor: 4
   }
 }
 # layer {
@@ -616,8 +427,8 @@ layer {
     phase: TEST
   }
   mat_write_param {
-    prefix:"evaluate/SH0818_ORI_iter_55000/feature/"
-    source:"evaluate/SH0818_ORI_iter_55000/list/testImageName.txt"
+prefix:"../test/matFeature/"
+source:"../test/list/imageID.txt"
     strip: 0
     period: 1
   }

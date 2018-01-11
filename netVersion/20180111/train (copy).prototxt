@@ -1,13 +1,23 @@
 # VGG 16-layer network convolutional finetuning
 # Network modified to have smaller receptive field (128 pixels)
-# and smaller stride (8 pixels) when run in convolutional mode.
+# nand smaller stride (8 pixels) when run in convolutional mode.
 #
 # In this model we also change max pooling size in the first 4 layers
 # from 2 to 3 while retaining stride = 2
 # which makes it easier to exactly align responses at different layers.
 #
+# For alignment to work, we set (we choose 32x so as to be able to evaluate
+# the model for all different subsampling sizes):
+# (1) input dimension equal to
+# $n = 32 * k - 31$, e.g., 321 (for k = 11)
+# Dimension after pooling w. subsampling:
+# (16 * k - 15); (8 * k - 7); (4 * k - 3); (2 * k - 1); (k).
+# For k = 11, these translate to
+#           161;          81;          41;          21;  11
+# 
 
-name: "${NET_ID}"
+#把第三层pool改成stride1,使下采样变成4倍，此外去掉第五个pooling，为了保证不率掉边界信息，修改第五卷积层的dilation，为了不率掉关键信息，此外把hole的视野范围进行了修改。
+name: "VGG16YQY"
 
 layer {
   name: "data"
@@ -16,10 +26,10 @@ layer {
   top: "label"
   top: "data_dim"
   include {
-    phase: TEST
+    phase: TRAIN
   }
   transform_param {
-    mirror: false
+    mirror: true
     crop_size: 321
     mean_value: 104.008
     mean_value: 116.669
@@ -27,18 +37,27 @@ layer {
   }
   image_data_param {
     root_folder:"/home/yqy/computerVison/deeplabV2CUDNN5/trainBuilding"
-    source:"evaluate/ori_iter_111000/list/testImage.txt"
-    batch_size: 1
-    label_type: NONE
+    source:"list/listSH08204SV3/train.txt"
+    batch_size: 5
+    shuffle: true
+    label_type: PIXEL
   }
 }
 
-###################### DeepLab ##########################
+###################### DeepLab ####################
 layer {
   name: "conv1_1"
   type: "Convolution"
   bottom: "data"
   top: "conv1_1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   convolution_param {
     num_output: 64
     pad: 1
@@ -56,6 +75,14 @@ layer {
   type: "Convolution"
   bottom: "conv1_1"
   top: "conv1_2"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   convolution_param {
     num_output: 64
     pad: 1
@@ -63,7 +90,7 @@ layer {
   }
 }
 layer {
-  name: "relu1_2" 
+  name: "relu1_2"
   type: "ReLU"
   bottom: "conv1_2"
   top: "conv1_2"
@@ -85,6 +112,14 @@ layer {
   type: "Convolution"
   bottom: "pool1"
   top: "conv2_1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   convolution_param {
     num_output: 128
     pad: 1
@@ -102,6 +137,14 @@ layer {
   type: "Convolution"
   bottom: "conv2_1"
   top: "conv2_2"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   convolution_param {
     num_output: 128
     pad: 1
@@ -131,6 +174,14 @@ layer {
   type: "Convolution"
   bottom: "pool2"
   top: "conv3_1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   convolution_param {
     num_output: 256
     pad: 1
@@ -148,6 +199,14 @@ layer {
   type: "Convolution"
   bottom: "conv3_1"
   top: "conv3_2"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   convolution_param {
     num_output: 256
     pad: 1
@@ -165,6 +224,14 @@ layer {
   type: "Convolution"
   bottom: "conv3_2"
   top: "conv3_3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   convolution_param {
     num_output: 256
     pad: 1
@@ -194,13 +261,20 @@ layer {
   bottom: "conv4_1"
   top: "conv4_1"
 }
-
 ### hole = 0
 layer {
   name: "fc6_1"
   type: "Convolution"
-  bottom:"conv4_1"
+ bottom:"conv4_1"
   top: "fc6_1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   convolution_param {
     num_output: 1024
     pad: 1
@@ -227,6 +301,14 @@ layer {
   type: "Convolution"
   bottom: "fc6_1"
   top: "fc7_1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   convolution_param {
     num_output: 1024
     kernel_size: 1
@@ -252,9 +334,25 @@ layer {
   type: "Convolution"
   bottom: "fc7_1"
   top: "fc8_${EXP}_1"
+  param {
+    lr_mult: 10
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 20
+    decay_mult: 0
+  }
   convolution_param {
     num_output: 2
     kernel_size: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
   }
 }
 
@@ -262,8 +360,16 @@ layer {
 layer {
   name: "fc6_2"
   type: "Convolution"
-  bottom:"conv4_1"
+ bottom:"conv4_1"
   top: "fc6_2"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   convolution_param {
     num_output: 1024
     pad: 3
@@ -291,6 +397,14 @@ layer {
   type: "Convolution"
   bottom: "fc6_2"
   top: "fc7_2"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   convolution_param {
     num_output: 1024
     kernel_size: 1
@@ -316,9 +430,25 @@ layer {
   type: "Convolution"
   bottom: "fc7_2"
   top: "fc8_${EXP}_2"
+  param {
+    lr_mult: 10
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 20
+    decay_mult: 0
+  }
   convolution_param {
     num_output: 2
     kernel_size: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
   }
 }
 
@@ -326,8 +456,16 @@ layer {
 layer {
   name: "fc6_3"
   type: "Convolution"
-  bottom:"conv4_1"
+ bottom:"conv4_1"
   top: "fc6_3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   convolution_param {
     num_output: 1024
     pad: 6
@@ -355,6 +493,14 @@ layer {
   type: "Convolution"
   bottom: "fc6_3"
   top: "fc7_3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   convolution_param {
     num_output: 1024
     kernel_size: 1
@@ -380,14 +526,29 @@ layer {
   type: "Convolution"
   bottom: "fc7_3"
   top: "fc8_${EXP}_3"
+  param {
+    lr_mult: 10
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 20
+    decay_mult: 0
+  }
   convolution_param {
     num_output: 2
     kernel_size: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
   }
 }
 
-
-### 四个层相加，eltwise层的操作有三个product点乘，sum相加减，max取大值，其中sum是默认的方式。
+### SUM the four branches
 layer {
   bottom: "fc8_${EXP}_1"
   bottom: "fc8_${EXP}_2"
@@ -399,43 +560,44 @@ layer {
     operation: SUM
   }
 }
-## original resolution，采用双线性插值实现反卷积
+
+#################
 layer {
-  name: "fc8_interp"
+  bottom: "label"
+  top: "label_shrink"
+  name: "label_shrink"
   type: "Interp"
-  bottom: "fc8_${EXP}"
-  top: "fc8_interp"
   interp_param {
-    zoom_factor: 4
+    shrink_factor: 4
+    pad_beg: 0
+    pad_end: 0
   }
 }
-# layer {
-#   bottom: "fc8_interp"
-#   top: "fc8_interp_argmax"
-#   name: "fc8_interp_argmax"
-#   type: "ArgMax"
-#   argmax_param {
-#     axis: 1
-#   }
-# }
 layer {
-  name: "fc8_mat"
-  type: "MatWrite"
-#  bottom: "fc8_interp_argmax"
-  bottom: "fc8_interp"
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8_${EXP}"
+  bottom: "label_shrink"
   include {
-    phase: TEST
+    phase: TRAIN
   }
-  mat_write_param {
-    prefix:"evaluate/ori_iter_111000/feature/"
-    source:"evaluate/ori_iter_111000/list/testImageName.txt"
-    strip: 0
-    period: 1
+  loss_param {
+    ignore_label: 255
+  }
+}
+layer {
+  name: "accuracy"
+  type: "SegAccuracy"
+  bottom: "fc8_${EXP}"
+  bottom: "label_shrink"
+  top: "accuracy"
+  seg_accuracy_param {
+    ignore_label: 255
   }
 }
 layer {
   name: "silence"
   type: "Silence"
-  bottom: "label"
   bottom: "data_dim"
 }
+

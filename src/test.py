@@ -6,6 +6,9 @@ import shutil
 import scipy.io as scio
 import numpy as  np
 
+import sys
+
+
 import multiprocessing
 cpuNum=multiprocessing.cpu_count()
 print("cpu总数："+str(cpuNum))
@@ -85,7 +88,7 @@ def mergeResult(piecePath,savePath,P,splitInfo,side):
 
 
 ####overSplit
-imagePath='../0818数据/1.jpg'
+imagePath='../data/0818数据/1.jpg'
 P=40
 netInputSide=321
 savePath='../test/overlapSplit'
@@ -117,12 +120,12 @@ with open(txtPath+"/imageID.txt", "w") as f:
 
 ####开始调用caffe检测
 ##文件设置
-caffeToolsPath="/home/yqy/computerVison/deepLabCaffe/build/tools/caffe"
+caffeToolsPath="/home/yqy/computerVison/deeplabV2History/deeplabV2ORI/build/tools/caffe"
 iterNum=countImage
 model="../train/result/SH4SV3Init.caffemodel"
 netStructure="../netVersion/4SV3/test.prototxt"
 
-##先准备mat特征的输出环境
+##先准备mat特征的输出环境solver
 matPath='../test/matFeature'
 if os.path.exists(matPath):
     shutil.rmtree(matPath)

@@ -4,4 +4,6 @@ train
 .idea
 data
 *.log
+netVersionBack
+
 

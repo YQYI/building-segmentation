@@ -1,4 +1,4 @@
-train_net:"netVersion/ORI/train.prototxt"
+train_net:"train.prototxt"
 
 lr_policy: "poly"
 power: 0.9
@@ -10,6 +10,6 @@ max_iter: 200000
 momentum: 0.9
 weight_decay: 0.0005
 
-snapshot: 3000
-snapshot_prefix:"trainResult/ori"
+snapshot: 5000
+snapshot_prefix:"trainResult/trainResultSH08194SV2/SH08194SV2"
 solver_mode: GPU

@@ -35,8 +35,8 @@ layer {
     mean_value: 122.675
   }
   image_data_param {
-    root_folder:"/home/yqy/computerVison/RSBD4/trainBuilding"
-    source:"imageSource/list/train.txt"
+    root_folder:"/home/yqy/computerVison/deeplabV2CUDNN5/trainBuilding"
+    source:"list/listSH0816/train.txt"
     batch_size: 5
     shuffle: true
     label_type: PIXEL
