@@ -6,13 +6,14 @@ import shutil
 import scipy.io as scio
 import numpy as  np
 
-import sys
 
 
 import multiprocessing
 cpuNum=multiprocessing.cpu_count()
 print("cpu总数："+str(cpuNum))
 #overlapSplit这里面有个很大的逻辑陷阱，注意计算有效边长是减去一个重叠因子
+
+
 def overlapSplit(imagePath,P,netInputSide,savePath):
     suffix=imagePath[-4:]
     image=cv2.imread(imagePath)
