@@ -4,18 +4,31 @@ import shutil
 import numpy as np
 import time
 from PIL import Image
+from numba import jit
+from datetime import datetime
+#图像反色
+def reverse(imagePath):
+    image=cv2.imread(imagePath)
+    img_base = np.zeros(image.shape, np.uint8)
+    for i in range(image.shape[0]):
+        for j in range(image.shape[1]):
+            img_base[i, j, 0] = np.uint8(255)
+            img_base[i, j, 1] = np.uint8(255)
+            img_base[i, j, 2] = np.uint8(255)
+    result=img_base-image
+    cv2.imwrite(imagePath,result)
 
 def rotateDataSet(imagePath,savepath,rotateTime):
     image=Image.open(imagePath)
     imageName=imagePath.split('/')[-1]
-    aAngle=360//rotateTime
+    aAngle=180//rotateTime
     for i in range(rotateTime):
-        image_roatated=image.rotate(i*aAngle)
-        image_roatated.save(savepath+'/'+str(i*aAngle)+imageName)
+        image_rotated=image.rotate(180+i*aAngle)
+        image_rotated.save(savepath+'/'+str(i*aAngle)+imageName)
+
 
 def clipImage(imageClipedPath,savePath,side,backGroundValue):
     image=cv2.imread(imageClipedPath)
-    suffix=imageClipedPath[-4:]
     padH=int(side-(image.shape[0]/side))
     padW=int(side-(image.shape[1]/side))
     imagePaded=cv2.copyMakeBorder(image, 0, padH, 0, padW, cv2.BORDER_CONSTANT, value=backGroundValue)
@@ -24,11 +37,11 @@ def clipImage(imageClipedPath,savePath,side,backGroundValue):
     for i in range(splitH):
         for j in range(splitW):
             piece=imagePaded[side*i:side*i+side,side*j:side*j+side]
-            cv2.imwrite(savePath+'/'+str(i)+'_'+str(j)+suffix,piece)
+            cv2.imwrite(savePath+'/'+str(i)+'_'+str(j)+imageClipedPath.split('/')[-1],piece)
 
 def ifNeedDelete(labelClipedPath,imageClipedPath,labelList,backGroundValue,num):
     for labelName in labelList:
-        print("process "+str(num)+" is checking " + labelName)
+        #print("process "+str(num)+" is checking " + labelName)
         labelImage = cv2.imread(labelClipedPath + '/' + labelName)
         height = labelImage.shape[0]
         width = labelImage.shape[1]
@@ -42,7 +55,7 @@ def ifNeedDelete(labelClipedPath,imageClipedPath,labelList,backGroundValue,num):
                 break
         if noDelete == False:
             os.remove(labelClipedPath + '/' + labelName)
-            os.remove(imageClipedPath + '/' + labelName[0:-4] + '.png')
+            os.remove(imageClipedPath + '/' + labelName[0:-9] + 'image.png')
 
 def transformDimension(labelClipedPath,colourMap,labelCliped1DPath):
     labelClipedNameList=os.listdir(labelClipedPath)
@@ -54,26 +67,57 @@ def transformDimension(labelClipedPath,colourMap,labelCliped1DPath):
             image1D[m] =i
         cv2.imwrite(labelCliped1DPath+'/'+aName,image1D)
 
+def myMakeDir(dir,ifRewrite=False):
+    if os.path.exists(dir):
+        if(ifRewrite==False):
+            print("dir exists and do nothing!")
+            return
+        else:
+            print("dir exists and delete it!")
+            shutil.rmtree(dir)
+            os.makedirs(dir)
+    else:
+        os.makedirs(dir)
+
 ##########所有的路径
 def starTrainning():
     ####先切割训练样本
     print("start clip")
-    backGroundValue=(255,255,255)
+    backGroundValue=(0,0,0)
     imageSource='../data/toServer0109/train/image.png'
     labelSource='../data/toServer0109/train/label.png'
-    side=161
-    clipPath ='../train/clipResult'
-    if os.path.exists(clipPath):
-        shutil.rmtree(clipPath)
-    imageClipedPath=clipPath+'/image'
-    labelClipedPath=clipPath+'/label'
-    os.makedirs(imageClipedPath)
-    os.makedirs(labelClipedPath)
-    print("clip train image")
-    clipImage(imageSource,imageClipedPath,side,backGroundValue)
-    print("clip label image")
-    clipImage(labelSource,labelClipedPath,side,backGroundValue)
 
+    side=161
+    start=datetime.now()
+    imageRotatePath = '../train/rotate/image'
+    labelRotatePath = '../train/rotate/label'
+    myMakeDir(imageRotatePath, True)
+    myMakeDir(labelRotatePath, True)
+    print("rotate image")
+    rotateDataSet(imageSource,imageRotatePath,10)
+    print("rotate label")
+    rotateDataSet(labelSource,labelRotatePath,10)
+    stop=datetime.now()
+    print(stop-start)
+
+    clipPath='../train/clipResult'
+    myMakeDir(clipPath, True)
+
+    imageClipedPath='../train/clipResult/image'
+    labelClipedPath='../train/clipResult/label'
+    myMakeDir(imageClipedPath,True)
+    myMakeDir(labelClipedPath,True)
+    imageRotateList=os.listdir(imageRotatePath)
+    labelRotateList=os.listdir(labelRotatePath)
+    for aImage in imageRotateList:
+        print("clip train image")
+        clipImage(imageRotatePath+'/'+aImage,imageClipedPath,side,backGroundValue)
+
+    for aLabel in labelRotateList:
+        print("clip label image")
+        clipImage(labelRotatePath+'/'+aLabel,labelClipedPath,side,backGroundValue)
+
+    start=datetime.now()
     ####剔除无用样本
     print("start check!")
     labelNameList=os.listdir(labelClipedPath)
@@ -97,13 +141,14 @@ def starTrainning():
     for i in range(len(processList)):
         processList[i].join()
     print("check end!")
-
+    stop = datetime.now()
+    print (stop-start)
     ####转换训练标签通道
     print("start 3D to 1D!")
-    colourMap={(0, 0, 0): 0,
-               (255, 255, 255): 1}
-    labelCliped1DPath=clipPath+'/label1D'
-    os.makedirs(labelCliped1DPath)
+    colourMap={(255, 255, 255): 0,
+               (0, 0, 0): 1}
+    labelCliped1DPath='../train/clipResult/label1D'
+    myMakeDir(labelCliped1DPath,True)
     transformDimension(labelClipedPath,colourMap,labelCliped1DPath)
 
     ####生成描述文件
@@ -117,7 +162,7 @@ def starTrainning():
     with open(txtPath + "/train.txt", "w") as f:
         imageClipedNameList = os.listdir(imageClipedPath)
         for imageClipedName in imageClipedNameList:
-            f.write(imageClipedPath +'/'+ imageClipedName +' '+labelCliped1DPath + '/' + imageClipedName[0:-4]+'.png\n')
+            f.write(imageClipedPath +'/'+ imageClipedName +' '+labelCliped1DPath + '/' + imageClipedName[0:-9]+'label.png\n')
 
 
     ####启动训练
@@ -129,7 +174,7 @@ def starTrainning():
 
     resultPrefix=resultPath+'/'+timeNow
 
-    caffeToolPath='/home/yqy/computerVison/deepLabCaffe/build/tools/caffe'
+    caffeToolPath='/home/yqy/computerVison/deeplabCaffe/build/tools/caffe'
     solverFilePath='../netVersion/20180111/solver.prototxt'
 
     #修改solver里面的内容
@@ -151,7 +196,8 @@ def starTrainning():
             lines[i+1] = "source:\""+txtPath+"/train.txt"+"\""+"\n"
     open(netStructure, 'w').writelines(lines)
 
-    initFilePath='../initModel/4SV3Init.caffemodel'
+    initFilePath='../train/result/2018-01-11-15-34-12_iter_105000.caffemodel'
     logName=timeNow+'.log'
     os.system( caffeToolPath+" train --solver="+solverFilePath+" --weights="+initFilePath+" 2>&1 | tee "+logPath+'/'+logName)
 
+starTrainning()

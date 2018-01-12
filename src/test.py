@@ -1,16 +1,22 @@
 # -*- coding: utf-8 -*-
 ###############################涉及到图片全是jpg，涉及到标签全是png
+
 import os
+
 import cv2
+
 import shutil
+
 import scipy.io as scio
+
 import numpy as  np
 
-
-
 import multiprocessing
+
 cpuNum=multiprocessing.cpu_count()
+
 print("cpu总数："+str(cpuNum))
+
 #overlapSplit这里面有个很大的逻辑陷阱，注意计算有效边长是减去一个重叠因子
 
 
@@ -31,7 +37,7 @@ def overlapSplit(imagePath,P,netInputSide,savePath):
     splitW = int(imageValidPaded.shape[1] / validSide)
     print(splitW)
 
-    imagePaded=cv2.copyMakeBorder(imageValidPaded,P,P,P,P,cv2.BORDER_CONSTANT, value=0)
+    imagePaded=cv2.copyMakeBorder(imageValidPaded,P//2,P//2,P//2,P//2,cv2.BORDER_CONSTANT, value=0)
 
     movePace=netInputSide-P
     for i in range(splitH):
@@ -42,14 +48,14 @@ def overlapSplit(imagePath,P,netInputSide,savePath):
     return [splitH,splitW,validePadH,validePadW]
 
 
-def transformMatToPng(matList,savePath,processID):
+def transformMatToPng(matList,savePath,processID,side):
     for mat in matList:
         print("process"+str(processID)+" is transforming "+mat)
         data = scio.loadmat(matPath+'/'+mat)
         imageArray = data['data']
         imageArray = imageArray.transpose(1, 0, 2, 3)
-        result = np.argmax(imageArray, axis=2).reshape(321, 321)
-        pngImage = np.zeros((321, 321, 3), dtype=np.uint8)
+        result = np.argmax(imageArray, axis=2).reshape(side, side)
+        pngImage = np.zeros((side, side, 3), dtype=np.uint8)
         for i in range(result.shape[0]):
             for j in range(result.shape[1]):
                 if result[i][j] == 0:
@@ -58,13 +64,24 @@ def transformMatToPng(matList,savePath,processID):
                     pngImage[i][j] = (255, 255, 255)
         cv2.imwrite(savePath+'/'+mat[0:-4]+'.png', pngImage)
 
+
+
+#正则表达式
+import re
 def mergeResult(piecePath,savePath,P,splitInfo,side):
+    nameList=os.listdir(piecePath)
     vList=[]
     for i in range(splitInfo[0]):
         hList=[]
         for j in range(splitInfo[1]):
-            aPath=piecePath+'/'+str(i)+'_'+str(j)+"*"+'_blob_0.png'
-            print(aPath)
+            index=str(i)+'_'+str(j)
+            pattern = re.compile(index)
+            aName=''
+            for name in nameList:
+                if(pattern.search(name)):
+                    aName=name
+                    break
+            aPath=piecePath+'/'+aName
             piece=cv2.imread(aPath)
             cut=int(P/2)
             validPiece=piece[cut:side-cut,cut:side-cut]
@@ -89,9 +106,9 @@ def mergeResult(piecePath,savePath,P,splitInfo,side):
 
 
 ####overSplit
-imagePath='../data/0818数据/1.jpg'
-P=40
-netInputSide=321
+imagePath='../data/toServer0109/test/test.png'
+P=80
+netInputSide=161
 savePath='../test/overlapSplit'
 if os.path.exists(savePath):
     shutil.rmtree(savePath)
@@ -121,9 +138,9 @@ with open(txtPath+"/imageID.txt", "w") as f:
 
 ####开始调用caffe检测
 ##文件设置
-caffeToolsPath="/home/yqy/computerVison/deeplabV2History/deeplabV2ORI/build/tools/caffe"
+caffeToolsPath="/home/yqy/computerVison/deeplabCaffe/build/tools/caffe"
 iterNum=countImage
-model="../train/result/SH4SV3Init.caffemodel"
+model="../train/result/2018-01-11-15-34-12_iter_65000.caffemodel"
 netStructure="../netVersion/4SV3/test.prototxt"
 
 ##先准备mat特征的输出环境solver
@@ -165,11 +182,11 @@ for i in range(cpuNum):
     if i==cpuNum-1:
         aProcess = multiprocessing.Process(
             target=transformMatToPng,
-            args=(matList[pieceSize * i:], resultPath,i))
+            args=(matList[pieceSize * i:], resultPath,i,netInputSide))
     else:
         aProcess=multiprocessing.Process(
             target=transformMatToPng,
-            args=(matList[pieceSize*i:pieceSize*(i+1)],resultPath,i))
+            args=(matList[pieceSize*i:pieceSize*(i+1)],resultPath,i,netInputSide))
     processList.append(aProcess)
 
 for i in range(len(processList)):
