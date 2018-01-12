@@ -10,5 +10,5 @@ momentum: 0.9
 weight_decay: 0.0005
 
 snapshot: 5000
-snapshot_prefix:"../train/result/2018-01-12-14-54-31"
+snapshot_prefix:"../train/result/2018-01-12-15-03-34"
 solver_mode: GPU
