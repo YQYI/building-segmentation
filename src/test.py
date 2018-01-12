@@ -2,21 +2,13 @@
 ###############################涉及到图片全是jpg，涉及到标签全是png
 
 import os
-
 import cv2
-
 import shutil
-
 import scipy.io as scio
-
 import numpy as  np
-
 import multiprocessing
-
 cpuNum=multiprocessing.cpu_count()
-
 print("cpu总数："+str(cpuNum))
-
 #overlapSplit这里面有个很大的逻辑陷阱，注意计算有效边长是减去一个重叠因子
 
 
