@@ -6,8 +6,12 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/netVersion/20180111/solver.prototxt" afterPath="$PROJECT_DIR$/netVersion/20180111/solver.prototxt" />
+<<<<<<< HEAD
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test.py" afterPath="$PROJECT_DIR$/src/test.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/train.py" afterPath="$PROJECT_DIR$/src/train.py" />
+=======
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/netVersion/4SV3/train.prototxt" afterPath="$PROJECT_DIR$/netVersion/4SV3/train.prototxt" />
+>>>>>>> 8a16850990a5e31f543883aa7ccb7a2d4a58ee9a
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -21,11 +25,31 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+<<<<<<< HEAD
       <file leaf-file-name="train.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/train.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="203">
               <caret line="37" column="35" lean-forward="true" selection-start-line="37" selection-start-column="35" selection-end-line="37" selection-end-column="35" />
+=======
+      <file leaf-file-name="test.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/test.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-1800">
+              <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+              <folding>
+                <element signature="e#78#87#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="train.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/train.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="498">
+              <caret line="198" column="33" lean-forward="false" selection-start-line="198" selection-start-column="33" selection-end-line="198" selection-end-column="33" />
+>>>>>>> 8a16850990a5e31f543883aa7ccb7a2d4a58ee9a
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
                 <element signature="e#7323#10347#0" expanded="false" />
@@ -63,6 +87,7 @@
       <find>netStructure</find>
       <find>4SV3</find>
       <find>transformMatToPng</find>
+      <find>myMakeDir</find>
     </findStrings>
     <replaceStrings>
       <replace>.png</replace>
@@ -88,10 +113,17 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
+<<<<<<< HEAD
     <option name="x" value="231" />
     <option name="y" value="170" />
     <option name="width" value="1664" />
     <option name="height" value="897" />
+=======
+    <option name="x" value="51" />
+    <option name="y" value="82" />
+    <option name="width" value="1144" />
+    <option name="height" value="998" />
+>>>>>>> 8a16850990a5e31f543883aa7ccb7a2d4a58ee9a
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -357,7 +389,12 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
+<<<<<<< HEAD
     <frame x="231" y="170" width="1664" height="897" extended-state="0" />
+=======
+    <frame x="51" y="82" width="1144" height="998" extended-state="0" />
+    <editor active="true" />
+>>>>>>> 8a16850990a5e31f543883aa7ccb7a2d4a58ee9a
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16919191" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -748,6 +785,7 @@
       </provider>
     </entry>
     <entry file="file://$USER_HOME$/miniconda3/lib/python3.6/os.py">
+<<<<<<< HEAD
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="6293">
           <caret line="219" column="0" lean-forward="false" selection-start-line="219" selection-start-column="0" selection-end-line="219" selection-end-column="0" />
@@ -755,6 +793,8 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pythonCaffe/myPycaffe.py">
+=======
+>>>>>>> 8a16850990a5e31f543883aa7ccb7a2d4a58ee9a
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="290">
           <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
@@ -773,11 +813,26 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/train.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="203">
           <caret line="37" column="35" lean-forward="true" selection-start-line="37" selection-start-column="35" selection-end-line="37" selection-end-column="35" />
+=======
+        <state relative-caret-position="498">
+          <caret line="198" column="33" lean-forward="false" selection-start-line="198" selection-start-column="33" selection-end-line="198" selection-end-column="33" />
+>>>>>>> 8a16850990a5e31f543883aa7ccb7a2d4a58ee9a
           <folding>
             <element signature="e#0#9#0" expanded="true" />
             <element signature="e#7323#10347#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1800">
+          <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+          <folding>
+            <element signature="e#78#87#0" expanded="true" />
           </folding>
         </state>
       </provider>
