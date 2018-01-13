@@ -48,7 +48,7 @@ def ifNeedDelete(labelClipedPath,imageClipedPath,labelList,backGroundValue,num):
         labelImage = cv2.imread(labelClipedPath + '/' + labelName)
         if (judger0==labelImage).all() or (judger255==labelImage).all():
             os.remove(labelClipedPath + '/' + labelName)
-            os.remove(imageClipedPath + '/' + labelName[0:-9] + 'train.png')
+            os.remove(imageClipedPath + '/' + labelName[0:-9] + 'image.png')
         else:
             continue
 
@@ -79,8 +79,8 @@ def myMakeDir(dir,ifRewrite=False):
 def starTrainning():
     ####所有的变量设置
     backGroundValue = (0, 0, 0)
-    imageSource = '../data/toServer0109/train.png'
-    labelSource = '../data/toServer0109/label.png'
+    imageSource = '../data/toServer0109/train/image.png'
+    labelSource = '../data/toServer0109/train/label.png'
     imageRotatePath = '../train/rotate/image'
     labelRotatePath = '../train/rotate/label'
     clipPath = '../train/clipResult'
@@ -167,7 +167,7 @@ def starTrainning():
 
     ####启动训练
     timeNow=time.strftime("%Y-%m-%d-%H-%M-%S",time.localtime())
-    netStructure='/home/yqy/computerVison/RSBD4/netVersion/4SV3/train.prototxt'
+    netStructure='/home/yqy/computerVison/RSBD4/netVersion/20180111/train.prototxt'
     resultPath = '../train/result'
     logPath='../train/log'
     resultPrefix=resultPath+'/'+timeNow
@@ -190,10 +190,10 @@ def starTrainning():
             lines[i] = "root_folder:"+"\"" + "\""+"\n"
             lines[i+1] = "source:\""+txtPath+"/train.txt"+"\""+"\n"
     open(netStructure, 'w').writelines(lines)
-
-    initFilePath='../train/result/2018-01-11-15-34-12_iter_105000.caffemodel'
+    #/home/yqy/computerVison/RSBD4/train/result/2018-01-12-15-17-10_iter_200000.solverstate
+    initFilePath='../train/result/2018-01-12-15-17-10_iter_200000.solverstate'
     logName=timeNow+'.log'
-    os.system( caffeToolPath+" train --solver="+solverFilePath+" --weights="+initFilePath+" 2>&1 | tee "+logPath+'/'+logName)
+    os.system( caffeToolPath+" train --solver="+solverFilePath+" --snapshot="+initFilePath+" 2>&1 | tee "+logPath+'/'+logName)
 
 def testCode():
     ####先切割训练样本

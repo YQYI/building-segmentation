@@ -5,10 +5,10 @@ base_lr: 1e-3
 
 average_loss: 20
 display: 10
-max_iter: 200000
+max_iter: 500000
 momentum: 0.9
 weight_decay: 0.0005
 
-snapshot: 5000
+snapshot: 10000
 snapshot_prefix:"../train/result/2018-01-10-21-07-36"
 solver_mode: GPU

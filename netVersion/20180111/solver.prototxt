@@ -1,18 +1,13 @@
-train_net:"/home/yqy/computerVison/RSBD4/netVersion/4SV3/train.prototxt"
+train_net:"/home/yqy/computerVison/RSBD4/netVersion/20180111/train.prototxt"
 lr_policy: "poly"
 power: 0.9
 base_lr: 1e-3
 
 average_loss: 20
 display: 10
-max_iter: 200000
+max_iter: 400000
 momentum: 0.9
 weight_decay: 0.0005
-
-snapshot: 5000
-<<<<<<< HEAD
-snapshot_prefix:"../train/result/2018-01-12-23-33-47"
-=======
-snapshot_prefix:"../train/result/2018-01-12-15-03-34"
->>>>>>> 8a16850990a5e31f543883aa7ccb7a2d4a58ee9a
+snapshot: 10000
+snapshot_prefix:"../train/result/2018-01-13-12-12-26"
 solver_mode: GPU
